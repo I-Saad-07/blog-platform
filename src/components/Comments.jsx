@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import commentService from '../appwrite/comments';
+import commentService from '../appwrite/comments.js';
 import { Button, Input } from './index';
 import LikeButton from './LikeButton';
 

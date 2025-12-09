@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import likeService from '../appwrite/likes';
+import likeService from '../appwrite/likes.js';
 
 function LikeButton({ itemId, itemType = 'post', showCount = true, className = ''}) {
     const [isLiked, setIsLiked] = useState(false);

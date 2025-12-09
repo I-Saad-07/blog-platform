@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { Container, PostForm } from "../components"
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import appwriteService from '../appwrite/config1'
+import appwriteService from '../appwrite/config1.js'
 
 function EditPost() {
     const [post, setPost] = useState(null);
