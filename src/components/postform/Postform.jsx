@@ -55,11 +55,11 @@ export default function PostForm({ post }) {
                     data.featuredImage = fileId;
                     
                     // Get userId from NESTED structure
-                    const userId = userData?.userData?.$id;
-                    
+                    const userId = userData?.$id;
+
                     if (!userId) {
-                        console.error("User data structure:", userData);
-                        throw new Error("User not authenticated. Please login again");
+                        console.error("No user ID found. Full userData:", userData);
+                        throw new Error("User not authenticated. Please login again.");
                     }
                     
                     const dbPost = await appwriteService.createPost({ 
