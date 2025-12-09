@@ -24,7 +24,7 @@ function PostCard({ $id, title, featuredImage }) {
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <h2 className="text-lg font-semibold text-text-primary group-hover:text-primary transition-colors duration-200 line-clamp-2 leading-tight mb-3">
             {title}
           </h2>

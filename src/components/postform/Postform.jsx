@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";  // ADD useState
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config1.js";
@@ -20,37 +20,65 @@ export default function PostForm({ post }) {
 
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
+    const [isSubmitting, setIsSubmitting] = useState(false);  // ADD loading state
+
+    // Find the submit function and update this section:
+
+    // In the submit function, update the userId extraction:
 
     const submit = async (data) => {
-        if (post) {
-            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+        setIsSubmitting(true);
+        
+        try {
+            if (post) {
+                // Update existing post
+                const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
 
-            if (file) {
-                appwriteService.deleteFile(post.featuredImage);
-            }
+                if (file) {
+                    appwriteService.deleteFile(post.featuredImage);
+                }
 
-            const dbPost = await appwriteService.updatePost(post.$id, {
-                ...data,
-                featuredImage: file ? file.$id : undefined,
-            });
-
-            if (dbPost) {
-                navigate(`/post/${dbPost.$id}`);
-            }
-        } else {
-            const file = await appwriteService.uploadFile(data.image[0]);
-
-            if (file) {
-                const fileId = file.$id;
-                data.featuredImage = fileId;
-                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
+                const dbPost = await appwriteService.updatePost(post.$id, {
+                    ...data,
+                    featuredImage: file ? file.$id : undefined,
+                });
 
                 if (dbPost) {
                     navigate(`/post/${dbPost.$id}`);
                 }
+            } else {
+                // CREATE NEW POST - FIX USER ID
+                const file = await appwriteService.uploadFile(data.image[0]);
+
+                if (file) {
+                    const fileId = file.$id;
+                    data.featuredImage = fileId;
+                    
+                    // Get userId from NESTED structure
+                    const userId = userData?.userData?.$id;
+                    
+                    if (!userId) {
+                        console.error("User data structure:", userData);
+                        throw new Error("User not authenticated. Please login again");
+                    }
+                    
+                    const dbPost = await appwriteService.createPost({ 
+                        ...data, 
+                        userId: userId
+                    });
+
+                    if (dbPost) {
+                        navigate(`/post/${dbPost.$id}`);
+                    }
+                }
             }
-        }
-    };
+            } catch (error) {
+                console.error("Error submitting post:", error);
+                alert(`Failed to save post: ${error.message}`);
+            } finally {
+                setIsSubmitting(false);
+            }
+        };
 
     const slugTransform = useCallback((value) => {
         if (value && typeof value === "string")
@@ -75,11 +103,11 @@ export default function PostForm({ post }) {
 
     return (
         <div className="max-w-7xl mx-auto p-4">
-            <div className="mb-8 text-center max-w-2xl mx-auto">
-                <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-text-primary">
                     {post ? 'Edit Post' : 'Create New Post'}
                 </h1>
-                <p className="text-lg text-text-secondary mt-2">
+                <p className="text-text-secondary mt-2">
                     {post ? 'Update your blog post' : 'Share your thoughts with the world'}
                 </p>
             </div>
@@ -174,9 +202,19 @@ export default function PostForm({ post }) {
 
                                 <Button 
                                     type="submit" 
-                                    className="w-full py-3 bg-gradient-primary hover:shadow-lg hover:shadow-primary/20"
+                                    className="w-full py-3 bg-gradient-primary hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 relative"
+                                    disabled={isSubmitting}
                                 >
-                                    {post ? 'Update Post' : 'Publish Post'}
+                                    {isSubmitting ? (
+                                        <div className="flex items-center justify-center space-x-2">
+                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            <span>
+                                                {post ? 'Updating...' : 'Publishing...'}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        post ? 'Update Post' : 'Publish Post'
+                                    )}
                                 </Button>
                             </div>
                         </div>
@@ -187,10 +225,6 @@ export default function PostForm({ post }) {
                                 <li>• Use descriptive titles</li>
                                 <li>• Add relevant images</li>
                                 <li>• Write in markdown for better formatting</li>
-                                <li className="pt-2 font-medium text-text-primary">Tags Format:</li>
-                                <li>• Separate tags with commas</li>
-                                <li>• Example: react, javascript, web-development</li>
-                                <li>• Tags will display as clickable hashtags</li>
                             </ul>
                         </div>
                     </div>

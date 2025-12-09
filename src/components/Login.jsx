@@ -34,7 +34,7 @@ function Login() {
 
     return (
         <div className="min-h-[calc(100vh-200px)] flex items-center justify-center p-4">
-            <div className="w-full max-w-xl">
+            <div className="w-full max-w-md mx-4">
                 {/* Card */}
                 <div className="bg-surface rounded-2xl border border-border shadow-2xl overflow-hidden">
                     {/* Header with gradient */}
