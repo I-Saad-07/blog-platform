@@ -8,33 +8,19 @@ function Header() {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)  // ADD state for mobile menu
 
-  const navItems = [
-    {
-      name: 'Home',
-      slug: '/',
-      active: true
-    }, 
-    {
-      name: "Blog",
-      slug: "/all-posts",
-      active: true,
-    },
-    {
-      name: "Login",
-      slug: "/login",
-      active: !authStatus,
-    },
-    {
-      name: "Signup",
-      slug: "/signup",
-      active: !authStatus,
-    },
-    {
-      name: "Create",
-      slug: "/add-post",
-      active: authStatus,
-    }
+  const authNavItems = [
+      { name: 'Home', slug: '/', active: true },
+      { name: "Create", slug: "/add-post", active: true },
+      { name: "Account", slug: "/account", active: true },
   ]
+
+  const guestNavItems = [
+      { name: 'Home', slug: '/', active: true },
+      { name: "Login", slug: "/login", active: true },
+      { name: "Signup", slug: "/signup", active: true },
+  ]
+
+  const navItems = authStatus ? authNavItems : guestNavItems
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
